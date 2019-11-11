@@ -17,19 +17,14 @@ namespace SnakePictureBox
         const int xh = 120, yh = 120, size = 20;
         public int SnakeLengths = 0;
         public string Move = "";
-       // private List<PictureBox> trails = new List<PictureBox>();
+      //  private Rectangle SnakeHeadRect = new Rectangle();
+
+        List<Rectangle> SnakeBody = new List<Rectangle>();
+        Random loc = new Random();
 
 
-            /* public void addTrail(Point last, int SnakeLength)
-        {
-            trails.Add(new PictureBox());
-            this.Controls.Add(trails[SnakeLength]);
-            trails[SnakeLength].Location = last;
-            trails[SnakeLength].Size = new Size(size,size);
-            trails[SnakeLength].BackColor = Color.Yellow;
 
-
-        }*/
+           
         public Form1()
         {
             food = new PictureBox();
@@ -42,6 +37,11 @@ namespace SnakePictureBox
 
         }
 
+        private void GenerateFood()
+        {
+            food.Location = new Point(loc.Next(size)*size,loc.Next(size)*size);
+            
+        }
 
        
 
@@ -70,6 +70,15 @@ namespace SnakePictureBox
                 Move = "Up";
         }
 
+       /* private void CleanRect()
+        {
+            pictureBox1.CreateGraphics().FillRectangle(Brushes.White, SnakeHeadRect.X + 1, SnakeHeadRect.Y + 1, size - 1, size - 1);
+            SnakeHeadRect.Offset(+20, 0);
+     
+            pictureBox1.CreateGraphics().FillRectangle(Brushes.Green, SnakeHeadRect.X + 1, SnakeHeadRect.Y + 1, size - 1, size - 1);
+
+
+        }*/
         private void GameOver()
         {
             timer1.Stop();
@@ -80,7 +89,10 @@ namespace SnakePictureBox
             switch (Move)
             {
                 case "Right":
+                    //SnakeHeadRect.Location = new Point(SnakeHeadRect.Location.X + size, SnakeHeadRect.Location.Y);
+                //    CleanRect();
                     SnakeHead.Location = new Point(SnakeHead.Location.X + size, SnakeHead.Location.Y);
+
                     if (SnakeHead.Location.X == food.Location.X && SnakeHead.Location.Y == food.Location.Y)  // Проверка видит ли змея еду
                     {
                         GameOver();
@@ -94,11 +106,10 @@ namespace SnakePictureBox
                     SnakeHead.Location = new Point(SnakeHead.Location.X - size, SnakeHead.Location.Y);
                     if (SnakeHead.Location.X == food.Location.X && SnakeHead.Location.Y == food.Location.Y)// Проверка видит ли змея еду
                     {
-                        GameOver();
-                        //Generate food();
+                    //    GameOver();
+                        GenerateFood();
                         
-                    //     addTrail(new Point(SnakeHead.Location.X-size,SnakeHead.Location.Y),SnakeLengths);
-                     //    SnakeLengths++;
+                     
                     }
                     if (SnakeHead.Location.X < 0) // Смерть при врезании в стену
                         GameOver();
@@ -137,8 +148,14 @@ namespace SnakePictureBox
              for (int y = 0; y < this.Height; y += size)
                  e.Graphics.DrawLine(Pens.Black, 0, y, this.Width, y);
              ///                                                     /////////////
+             ///
+
+             SnakeBody.Add(new Rectangle);
+             SnakeHeadRect.Location = new Point(60,60);
+             SnakeHeadRect.Size = new Size(size,size);
+             e.Graphics.FillRectangle(Brushes.Green, SnakeHeadRect.X + 1, SnakeHeadRect.Y + 1, size - 1, size - 1);
 
 
-         }
+        }
     }
 }
