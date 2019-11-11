@@ -1,4 +1,4 @@
-﻿namespace SnakePictureBox
+﻿namespace Snake
 {
     partial class Form1
     {

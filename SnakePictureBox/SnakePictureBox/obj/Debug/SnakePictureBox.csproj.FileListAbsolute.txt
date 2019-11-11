@@ -7,3 +7,12 @@ C:\Users\ipr9n\source\repos\SnakePictureBox\SnakePictureBox\obj\Debug\SnakePictu
 C:\Users\ipr9n\source\repos\SnakePictureBox\SnakePictureBox\obj\Debug\SnakePictureBox.exe
 C:\Users\ipr9n\source\repos\SnakePictureBox\SnakePictureBox\obj\Debug\SnakePictureBox.pdb
 C:\Users\ipr9n\source\repos\SnakePictureBox\SnakePictureBox\obj\Debug\SnakePictureBox.csprojAssemblyReference.cache
+C:\pr9n.git\trunk\SnakePictureBox\SnakePictureBox\obj\Debug\SnakePictureBox.csprojAssemblyReference.cache
+C:\pr9n.git\trunk\SnakePictureBox\SnakePictureBox\obj\Debug\SnakePictureBox.csproj.GenerateResource.cache
+C:\pr9n.git\trunk\SnakePictureBox\SnakePictureBox\bin\Debug\Snake.exe.config
+C:\pr9n.git\trunk\SnakePictureBox\SnakePictureBox\bin\Debug\Snake.exe
+C:\pr9n.git\trunk\SnakePictureBox\SnakePictureBox\bin\Debug\Snake.pdb
+C:\pr9n.git\trunk\SnakePictureBox\SnakePictureBox\obj\Debug\Snake.Properties.Resources.resources
+C:\pr9n.git\trunk\SnakePictureBox\SnakePictureBox\obj\Debug\Snake.exe
+C:\pr9n.git\trunk\SnakePictureBox\SnakePictureBox\obj\Debug\Snake.pdb
+C:\pr9n.git\trunk\SnakePictureBox\SnakePictureBox\obj\Debug\Snake.Form1.resources
