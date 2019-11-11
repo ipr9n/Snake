@@ -31,9 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.SnakeHead = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.SnakeHead)).BeginInit();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -49,27 +47,17 @@
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // SnakeHead
-            // 
-            this.SnakeHead.Location = new System.Drawing.Point(771, 189);
-            this.SnakeHead.Name = "SnakeHead";
-            this.SnakeHead.Size = new System.Drawing.Size(100, 50);
-            this.SnakeHead.TabIndex = 1;
-            this.SnakeHead.TabStop = false;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1152, 605);
-            this.Controls.Add(this.SnakeHead);
             this.Controls.Add(this.pictureBox1);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.SnakeHead)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -77,7 +65,6 @@
         #endregion
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.PictureBox SnakeHead;
     }
 }
 
