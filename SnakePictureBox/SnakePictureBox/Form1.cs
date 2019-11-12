@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Snake
@@ -8,78 +9,71 @@ namespace Snake
     public partial class Form1 : Form
     {
         const int SquareSize = 20;
-        Point headLocation = new Point(0, 0);
         List<Point> snakeBody = new List<Point>();
-        private new Point food = new Point(7, 10);
+        private Point food = new Point(7, 10);
         Keys snakeDirection;
         Random random = new Random();
 
         public Form1()
         {
             snakeBody.Add(new Point(0, 0));
-            InitializeComponent();
+                      InitializeComponent();
+                      timer1.Interval = 250;
         }
 
         private void GenerateFood()
         {
-            timer1.Interval -= 5;
             food = new Point(random.Next(SquareSize), random.Next(SquareSize));
             foreach (var snakePart in snakeBody)
             {
                 if (food == snakePart)
                 {
-                    food = new Point(random.Next(SquareSize), random.Next(SquareSize));
+                   GenerateFood();
                     break;
                 }
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        public Keys GetOppositeDirrection(Keys dirrection)
         {
-            timer1.Interval = 250;
+            if (dirrection == Keys.Left) return Keys.Right;
+            if (dirrection == Keys.Right) return Keys.Left;
+            if (dirrection == Keys.Up) return Keys.Down;
+            if (dirrection == Keys.Down) return Keys.Up;
+            else return Keys.A;
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             timer1.Start();
-            switch (e.KeyCode)
+            if (snakeBody.Count > 1 && e.KeyCode == GetOppositeDirrection(snakeDirection)) return;
+            else
             {
-                case Keys.Right when snakeDirection == Keys.Left && snakeBody.Count > 1:
-                    snakeDirection = Keys.Left;
-                    break;
-                case Keys.Right:
-                case Keys.Left when snakeDirection == Keys.Right && snakeBody.Count > 1:
-                    snakeDirection = Keys.Right;
-                    break;
-                case Keys.Left:
-                    snakeDirection = Keys.Left;
-                    break;
-                case Keys.Down when snakeDirection == Keys.Up && snakeBody.Count > 1:
-                    snakeDirection = Keys.Up;
-                    break;
-                case Keys.Down:
-                case Keys.Up when snakeDirection == Keys.Down && snakeBody.Count > 1:
-                    snakeDirection = Keys.Down;
-                    break;
-                case Keys.Up:
-                    snakeDirection = Keys.Up;
-                    break;
+                switch (e.KeyCode)
+                {
+                    case Keys.Left:
+                    case Keys.Right:
+                    case Keys.Up:
+                    case Keys.Down:
+                        snakeDirection = e.KeyCode;
+                        break;
+                }
             }
         }
 
         private void GameOver()
         {
             timer1.Stop();
-            MessageBox.Show("GameOver");
             snakeBody.Clear();
-            headLocation = new Point(0, 0);
             timer1.Interval = 250;
             snakeBody.Add(new Point(0, 0));
-            snakeDirection = Keys.A;
+           snakeDirection = Keys.A;
+            MessageBox.Show("GameOver");
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            Point headLocation = snakeBody[0];
             switch (snakeDirection)
             {
                 case Keys.Right:
@@ -99,17 +93,21 @@ namespace Snake
 
                     break;
             }
-            snakeBody.Insert(0, headLocation);
 
-            for (int i = 1; i < snakeBody.Count; i++)
-                if (snakeBody[0] == snakeBody[i])
-                    GameOver();
+            snakeBody.Insert(0, headLocation);
 
             if (snakeBody[0] != food)
                 snakeBody.RemoveAt(snakeBody.Count - 1);
             else
+            {
+                timer1.Interval -= 5;
                 GenerateFood();
-
+            }
+            if (snakeBody.Skip(1).Any(snakePart => snakePart == snakeBody[0]))
+                GameOver();
+            if (snakeBody[0].X * SquareSize >= pictureBox1.Width || snakeBody[0].X * SquareSize < 0 || snakeBody[0].Y * SquareSize < 0 ||
+                snakeBody[0].Y * SquareSize >= pictureBox1.Height)
+                GameOver();
             pictureBox1.Refresh();
         }
 
@@ -120,14 +118,12 @@ namespace Snake
             for (int y = 0; y < this.Height; y += SquareSize)
                 e.Graphics.DrawLine(Pens.Black, 0, y, this.Width, y);
 
-            if (snakeBody[0].X * SquareSize >= pictureBox1.Width || snakeBody[0].X * SquareSize < 0 || snakeBody[0].Y * SquareSize < 0 ||
-                snakeBody[0].Y * SquareSize >= pictureBox1.Height)
-                GameOver();
-
+           
             foreach (var Snake in snakeBody)
                 e.Graphics.FillRectangle(Brushes.Green, Snake.X * SquareSize, Snake.Y * SquareSize, SquareSize, SquareSize);
 
             e.Graphics.FillRectangle(Brushes.Blue, food.X * SquareSize, food.Y * SquareSize, SquareSize, SquareSize);
+
         }
     }
 }
