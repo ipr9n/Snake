@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -10,20 +11,33 @@ namespace Snake
 {
     class SnakeGame
     {
-        private const int squareSize = 20;
-        public List<Point> snakeBody = new List<Point>();
-        private Point food = new Point(7, 10);
+        public int width;
+        public int height;
+        public int squareSize;
+        public int squareCount;
+        private new Point food;
+
+        public SnakeGame()
+        {
+            squareSize = 20;
+            squareCount = 20;
+            width = 100;
+            height = 100;
+        }
+        public event Action Defeat = delegate { };
+        private List<Point> snakeBody = new List<Point>();
         private Keys snakeDirection;
         Random random = new Random();
 
         public void Restart()
         {
+            GenerateFood();
             snakeBody.Clear();
             snakeBody.Add(new Point(0, 0));
             snakeDirection = Keys.A;
         }
 
-        public void GenerateFood()
+        private void GenerateFood()
         {
             food = new Point(random.Next(squareSize), random.Next(squareSize));
             foreach (var snakePart in snakeBody)
@@ -36,7 +50,7 @@ namespace Snake
             }
         }
 
-        public void Update(Point WindowSize)
+        public void Update()
         {
             Point headLocation = snakeBody[0];
             switch (snakeDirection)
@@ -66,29 +80,39 @@ namespace Snake
             else
                 GenerateFood();
 
-            // if (snakeBody.Skip(1).Any(snakePart => snakePart == snakeBody[0]))
-            //  GameOver();
-            //if (snakeBody[0].X * squareSize >= WindowSize.X || snakeBody[0].X * squareSize < 0 || snakeBody[0].Y * squareSize < 0 ||
-            //  snakeBody[0].Y * squareSize >= WindowSize.Y)
-            //  GameOver();
+            if (snakeBody.Skip(1).Any(snakePart => snakePart == snakeBody[0]))
+            {
+                Defeat();
+                Restart();
+            }
+
+            if (snakeBody[0].X * squareSize >= width
+                || snakeBody[0].X * squareSize < 0
+                || snakeBody[0].Y * squareSize < 0
+                || snakeBody[0].Y * squareSize >= height)
+            {
+                Defeat();
+                Restart();
+            }
         }
 
-        public void Draw(Graphics graphics, Point WindowSize)
+        public void Draw(Graphics graphics)
         {
-            for (int x = 0; x < WindowSize.X; x += squareSize)
-                graphics.DrawLine(Pens.Black, x, 0, x, WindowSize.Y);
+            for (int x = 0; x < width; x += squareSize)
+                graphics.DrawLine(Pens.Black, x, 0, x, height);
 
-            for (int y = 0; y < WindowSize.Y; y += squareSize)
-                graphics.DrawLine(Pens.Black, 0, y, WindowSize.X, y);
+            for (int y = 0; y < height; y += squareSize)
+                graphics.DrawLine(Pens.Black, 0, y, width, y);
 
-            foreach (var Snake in snakeBody)
-                graphics.FillRectangle(Brushes.Green, Snake.X * squareSize, Snake.Y * squareSize, squareSize, squareSize);
+            foreach (var snakePart in snakeBody)
+                graphics.FillRectangle(Brushes.Green, snakePart.X * squareSize, snakePart.Y * squareSize, squareSize, squareSize);
 
             graphics.FillRectangle(Brushes.Blue, food.X * squareSize, food.Y * squareSize, squareSize, squareSize);
         }
-        public Keys GetOpositeDirection(Keys dirrection)
+
+        private Keys GetOpositeDirection(Keys direction)
         {
-            switch (dirrection)
+            switch (direction)
             {
                 case Keys.Left:
                     return Keys.Right;
@@ -105,7 +129,8 @@ namespace Snake
 
         public void TurnSnake(Keys direction)
         {
-            if (snakeBody.Count > 1 && direction == GetOpositeDirection(snakeDirection)) return;
+            if (snakeBody.Count > 1 && direction == GetOpositeDirection(snakeDirection))
+                return;
             switch (direction)
             {
                 case Keys.Left:
@@ -115,7 +140,6 @@ namespace Snake
                     snakeDirection = direction;
                     break;
             }
-
         }
     }
 }
