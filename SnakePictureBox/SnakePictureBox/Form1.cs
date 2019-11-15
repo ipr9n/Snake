@@ -9,35 +9,35 @@ namespace Snake
 
     public partial class Form1 : Form
     {
-        private SnakeGame snakeGame = new SnakeGame();
-
+        private const int squareSize = 20;
+        private const int squareCount = 20;
+        private SnakeGame snakeGame = new SnakeGame(squareSize, squareCount);
         public Form1()
         {
             InitializeComponent();
-            timer1.Interval = 100;
+
+            timer1.Interval = 200;
             snakeGame.Restart();
-            timer1.Start();
             snakeGame.Defeat += GameOver;
-            snakeGame.squareSize = 20;
-            snakeGame.squareCount = 20;
-            snakeGame.width = snakeGame.squareSize * snakeGame.squareCount;
-            snakeGame.height = snakeGame.squareSize * snakeGame.squareCount;
-            pictureBox1.Width = snakeGame.squareSize * snakeGame.squareCount + snakeGame.squareSize;
-            pictureBox1.Height = snakeGame.squareSize * snakeGame.squareCount + snakeGame.squareSize * 2;
+            pictureBox1.Width = squareSize * squareCount + squareSize;
+            pictureBox1.Height = squareSize * squareCount + squareSize * 2;
             this.Size = pictureBox1.Size;
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             snakeGame.TurnSnake(e.KeyCode);
+            if (!timer1.Enabled)
+                timer1.Start();
+
         }
 
         public void GameOver()
         {
             timer1.Stop();
-            timer1.Interval = 250;
+            timer1.Interval = 200;
             MessageBox.Show("GameOver");
-            timer1.Start();
+            snakeGame.Restart();
         }
 
         private void timer1_Tick(object sender, EventArgs e)

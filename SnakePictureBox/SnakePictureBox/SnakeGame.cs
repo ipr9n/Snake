@@ -11,69 +11,66 @@ namespace Snake
 {
     class SnakeGame
     {
-        public int width;
-        public int height;
-        public int squareSize;
-        public int squareCount;
-        private new Point food;
 
-        public SnakeGame()
+        private readonly int squareSize;
+        private readonly int squareCount;
+        private Point food;
+
+        public SnakeGame(int squareSize, int squareCount)
         {
-            squareSize = 20;
-            squareCount = 20;
-            width = 100;
-            height = 100;
+            this.squareSize = squareSize;
+            this.squareCount = squareCount;
         }
         public event Action Defeat = delegate { };
         private List<Point> snakeBody = new List<Point>();
-        private Keys snakeDirection;
-        Random random = new Random();
 
-        public void Restart()
+        private Keys snakeDirection;
+        private Random random = new Random();
+
+        public void Draw(Graphics graphics)
         {
-            GenerateFood();
-            snakeBody.Clear();
-            snakeBody.Add(new Point(0, 0));
-            snakeDirection = Keys.A;
+            for (int x = 0; x < squareCount; x++)
+                graphics.DrawLine(Pens.Black, x * squareSize, 0, x * squareSize, squareCount * squareSize);
+
+            for (int y = 0; y < squareCount; y++)
+                graphics.DrawLine(Pens.Black, 0, y * squareSize, squareCount * squareSize, y * squareSize);
+
+            foreach (var snakePart in snakeBody)
+                graphics.FillRectangle(Brushes.Green, snakePart.X * squareSize, snakePart.Y * squareSize, squareSize, squareSize);
+
+            graphics.FillRectangle(Brushes.Blue, food.X * squareSize, food.Y * squareSize, squareSize, squareSize);
         }
 
         private void GenerateFood()
         {
-            food = new Point(random.Next(squareSize), random.Next(squareSize));
-            foreach (var snakePart in snakeBody)
+            do
             {
-                if (food == snakePart)
-                {
-                    GenerateFood();
-                    break;
-                }
-            }
+                food = new Point(random.Next(squareSize), random.Next(squareSize));
+            } while (snakeBody.Contains(food));
         }
-
         public void Update()
         {
-            Point headLocation = snakeBody[0];
+            Point newHeadPosition = snakeBody[0];
             switch (snakeDirection)
             {
                 case Keys.Right:
-                    headLocation.X += 1;
+                    newHeadPosition.X += 1;
 
                     break;
                 case Keys.Left:
-                    headLocation.X -= 1;
+                    newHeadPosition.X -= 1;
 
                     break;
                 case Keys.Up:
-                    headLocation.Y -= 1;
+                    newHeadPosition.Y -= 1;
 
                     break;
                 case Keys.Down:
-                    headLocation.Y += 1;
+                    newHeadPosition.Y += 1;
 
                     break;
             }
-
-            snakeBody.Insert(0, headLocation);
+            snakeBody.Insert(0, newHeadPosition);
 
             if (snakeBody[0] != food)
                 snakeBody.RemoveAt(snakeBody.Count - 1);
@@ -81,33 +78,36 @@ namespace Snake
                 GenerateFood();
 
             if (snakeBody.Skip(1).Any(snakePart => snakePart == snakeBody[0]))
-            {
                 Defeat();
-                Restart();
-            }
 
-            if (snakeBody[0].X * squareSize >= width
-                || snakeBody[0].X * squareSize < 0
-                || snakeBody[0].Y * squareSize < 0
-                || snakeBody[0].Y * squareSize >= height)
-            {
+            if (snakeBody[0].X >= squareCount ||
+                snakeBody[0].X < 0 ||
+                snakeBody[0].Y < 0 ||
+                snakeBody[0].Y >= squareCount)
                 Defeat();
-                Restart();
+        }
+
+        public void TurnSnake(Keys direction)
+        {
+            switch (direction)
+            {
+                case Keys.Left:
+                case Keys.Right:
+                case Keys.Up:
+                case Keys.Down:
+                    if (snakeBody.Count > 1 && direction == GetOpositeDirection(snakeDirection))
+                        return;
+
+                    snakeDirection = direction;
+                    break;
             }
         }
 
-        public void Draw(Graphics graphics)
+        public void Restart()
         {
-            for (int x = 0; x < width; x += squareSize)
-                graphics.DrawLine(Pens.Black, x, 0, x, height);
-
-            for (int y = 0; y < height; y += squareSize)
-                graphics.DrawLine(Pens.Black, 0, y, width, y);
-
-            foreach (var snakePart in snakeBody)
-                graphics.FillRectangle(Brushes.Green, snakePart.X * squareSize, snakePart.Y * squareSize, squareSize, squareSize);
-
-            graphics.FillRectangle(Brushes.Blue, food.X * squareSize, food.Y * squareSize, squareSize, squareSize);
+            GenerateFood();
+            snakeBody.Clear();
+            snakeBody.Add(new Point(0, 0));
         }
 
         private Keys GetOpositeDirection(Keys direction)
@@ -123,22 +123,7 @@ namespace Snake
                 case Keys.Down:
                     return Keys.Up;
                 default:
-                    return Keys.A;
-            }
-        }
-
-        public void TurnSnake(Keys direction)
-        {
-            if (snakeBody.Count > 1 && direction == GetOpositeDirection(snakeDirection))
-                return;
-            switch (direction)
-            {
-                case Keys.Left:
-                case Keys.Right:
-                case Keys.Up:
-                case Keys.Down:
-                    snakeDirection = direction;
-                    break;
+                    throw new ArgumentOutOfRangeException();
             }
         }
     }
