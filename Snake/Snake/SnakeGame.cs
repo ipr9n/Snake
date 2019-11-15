@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Snake
@@ -12,42 +9,41 @@ namespace Snake
     class SnakeGame
     {
         private Random random = new Random();
-        private readonly int SquareSize;
-        private readonly int SquareCount;
+        private readonly int squareSize;
+        private readonly int squareCount;
+
+        private List<Point> snakeBody = new List<Point>();
+        private Keys snakeDirection;
         private Point food;
+        public event Action Defeat = delegate { };
 
         public SnakeGame(int squareSize, int squareCount)
         {
-            this.SquareSize = squareSize;
-            this.SquareCount = squareCount;
+            this.squareSize = squareSize;
+            this.squareCount = squareCount;
         }
 
-        private List<Point> snakeBody = new List<Point>();
-
-        private Keys snakeDirection;
-
-        public event Action Defeat = delegate { };
-
-        public void Draw(Graphics graphics)
+        public void Restart()
         {
-            for (int x = 0; x < SquareCount; x++)
-                graphics.DrawLine(Pens.Black, x * SquareSize, 0, x * SquareSize, SquareCount * SquareSize);
-
-            for (int y = 0; y < SquareCount; y++)
-                graphics.DrawLine(Pens.Black, 0, y * SquareSize, SquareCount * SquareSize, y * SquareSize);
-
-            foreach (var snakePart in snakeBody)
-                graphics.FillRectangle(Brushes.Green, snakePart.X * SquareSize, snakePart.Y * SquareSize, SquareSize, SquareSize);
-
-            graphics.FillRectangle(Brushes.Blue, food.X * SquareSize, food.Y * SquareSize, SquareSize, SquareSize);
+            GenerateFood();
+            snakeBody.Clear();
+            snakeBody.Add(new Point(0, 0));
         }
 
-        private void GenerateFood()
+        public void TurnSnake(Keys direction)
         {
-            do
+            switch (direction)
             {
-                food = new Point(random.Next(SquareSize), random.Next(SquareSize));
-            } while (snakeBody.Contains(food));
+                case Keys.Left:
+                case Keys.Right:
+                case Keys.Up:
+                case Keys.Down:
+                    if (snakeBody.Count > 1 && direction == GetOpositeDirection(snakeDirection))
+                        return;
+
+                    snakeDirection = direction;
+                    break;
+            }
         }
 
         public void Update()
@@ -72,6 +68,7 @@ namespace Snake
 
                     break;
             }
+
             snakeBody.Insert(0, newHeadPosition);
 
             if (snakeBody[0] != food)
@@ -79,37 +76,36 @@ namespace Snake
             else
                 GenerateFood();
 
-            if (snakeBody.Skip(1).Any(snakePart => snakePart == snakeBody[0]))
+            if (snakeBody.Skip(1).Contains(snakeBody[0]))
                 Defeat();
 
-            if (snakeBody[0].X >= SquareCount ||
-                snakeBody[0].X < 0 ||
+            if (snakeBody[0].X >= squareCount ||
+                snakeBody[0].Y >= squareCount ||
                 snakeBody[0].Y < 0 ||
-                snakeBody[0].Y >= SquareCount)
+                snakeBody[0].X < 0
+               )
                 Defeat();
         }
-
-        public void TurnSnake(Keys direction)
+        private void GenerateFood()
         {
-            switch (direction)
+            do
             {
-                case Keys.Left:
-                case Keys.Right:
-                case Keys.Up:
-                case Keys.Down:
-                    if (snakeBody.Count > 1 && direction == GetOpositeDirection(snakeDirection))
-                        return;
-
-                    snakeDirection = direction;
-                    break;
-            }
+                food = new Point(random.Next(squareSize), random.Next(squareSize));
+            } while (snakeBody.Contains(food));
         }
 
-        public void Restart()
+        public void Draw(Graphics graphics)
         {
-            GenerateFood();
-            snakeBody.Clear();
-            snakeBody.Add(new Point(0, 0));
+            for (int x = 0; x <= squareCount; x++)
+                graphics.DrawLine(Pens.Black, x * squareSize, 0, x * squareSize, squareCount * squareSize);
+
+            for (int y = 0; y <= squareCount; y++)
+                graphics.DrawLine(Pens.Black, 0, y * squareSize, squareCount * squareSize, y * squareSize);
+
+            foreach (Point snakePart in snakeBody)
+                graphics.FillRectangle(Brushes.Green, snakePart.X * squareSize, snakePart.Y * squareSize, squareSize, squareSize);
+
+            graphics.FillRectangle(Brushes.Blue, food.X * squareSize, food.Y * squareSize, squareSize, squareSize);
         }
 
         private Keys GetOpositeDirection(Keys direction)

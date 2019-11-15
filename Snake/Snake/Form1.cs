@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace Snake
@@ -19,14 +17,17 @@ namespace Snake
             timer1.Interval = 200;
             snakeGame.Restart();
             snakeGame.Defeat += GameOver;
-            pictureBox1.Width = SquareSize * SquareCount + SquareSize;
-            pictureBox1.Height = SquareSize * SquareCount + SquareSize * 2;
-            this.Size = pictureBox1.Size;
+            pictureBox1.Location = new Point(1,1);
+            pictureBox1.Width = SquareSize * SquareCount + 1;
+            pictureBox1.Height = SquareSize * SquareCount + 1;
+            this.ClientSize = new Size(pictureBox1.Size.Width + 2 * pictureBox1.Location.X,
+                pictureBox1.Size.Width + 2 * pictureBox1.Location.Y);
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             snakeGame.TurnSnake(e.KeyCode);
+
             if (!timer1.Enabled)
                 timer1.Start();
         }
